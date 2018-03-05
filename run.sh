@@ -29,18 +29,21 @@ function run_software {
   OTUS=$8
 
   echo 'Fastspar (single thread)'
-  /usr/bin/time -v ./software/fastspar/fastspar -c "${DATA_FP}" -r "${FULL_OUTPUT_DIR}"/fastspar_cor.tsv -a "${FULL_OUTPUT_DIR}"/fastspar_cov.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" -y 2>"${FULL_PROFILE_DIR}"/fastspar_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
+  /usr/bin/time -v ./software/fastspar/fastspar -c "${DATA_FP}" -r "${FULL_OUTPUT_DIR}"/fastspar_cor.tsv -a "${FULL_OUTPUT_DIR}"/fastspar_cov.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" -y 2>"${FULL_PROFILE_DIR}"/fastspar_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
 
   echo 'Fastspar (10 threads)'
-  /usr/bin/time -v ./software/fastspar/fastspar -c "${DATA_FP}" -r "${FULL_OUTPUT_DIR}"/fastspar_cor_threaded.tsv -a "${FULL_OUTPUT_DIR}"/fastspar_cov_threaded.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" -t 10 -y 2>"${FULL_PROFILE_DIR}"/fastspar_threaded_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
+  /usr/bin/time -v ./software/fastspar/fastspar -c "${DATA_FP}" -r "${FULL_OUTPUT_DIR}"/fastspar_cor_threaded.tsv -a "${FULL_OUTPUT_DIR}"/fastspar_cov_threaded.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" -t 10 -y 2>"${FULL_PROFILE_DIR}"/fastspar_threaded_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
+
+  echo 'SparCC'
+  /usr/bin/time -v timeout --foreground 3h ./software/sparcc/SparCC.py -c "${FULL_OUTPUT_DIR}"/sparcc_cor.tsv -v "${FULL_OUTPUT_DIR}"/sparcc_cov.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" "${DATA_FP}" 2>"${FULL_PROFILE_DIR}"/sparcc_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
 
   echo 'SpiecEasi SparCC'
-  /usr/bin/time -v ./scripts/run_spieceasi.R "${ITERATIONS}" "${XITERATIONS}" "${DATA_FP}" "${FULL_OUTPUT_DIR}"/spieceasi_cor.tsv 2>"${FULL_PROFILE_DIR}"/spieceasi_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
+  /usr/bin/time -v ./scripts/run_spieceasi.R "${ITERATIONS}" "${XITERATIONS}" "${DATA_FP}" "${FULL_OUTPUT_DIR}"/spieceasi_cor.tsv 2>"${FULL_PROFILE_DIR}"/spieceasi_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
 
   echo 'Mothur SparCC'
   DATA_MOTHUR_FN="${DATA_MOTHUR_FP##*/}"
   MOTHUR_BASE_FP="${DATA_MOTHUR_FP%/*}/${DATA_MOTHUR_FN/.tsv/}.1.sparcc_"
-  /usr/bin/time -v timeout --foreground 3h ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
+  /usr/bin/time -v timeout --foreground 3h ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
   mv "${MOTHUR_BASE_FP}correlation" "${FULL_OUTPUT_DIR}"/mothur_cor.tsv
   rm "${MOTHUR_BASE_FP}relabund"
 }
@@ -87,4 +90,4 @@ echo 'Mid-sized dataset, for profiling'
 run_software "${MID_DATA_FP}" "${MID_DATA_MOTHUR_FP}" "${OUTPUT_DIR}"/large "${PROFILE_DIR}"/large "${ITERATIONS}" "${XITERATIONS}" "${MID_SAMPLE_COUNT}" "${MID_OTU_COUNT}"
 
 # Collect data
-./scripts/collect_profile_data.py --profile_log_fps profiles/* --output output/profiles.tsv
+./scripts/collect_profile_data.py --profile_log_fps "${PROFILE_DIR}"/large/*txt --output "${OUTPUT_DIR}"/profiles.tsv
