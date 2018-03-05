@@ -1,3 +1,7 @@
+#!/bin/bash
+set -x
+
+
 # Parameters
 RNG_SEED=0
 MID_SAMPLE_COUNT=500
@@ -36,7 +40,7 @@ function run_software {
   echo 'Mothur SparCC'
   DATA_MOTHUR_FN="${DATA_MOTHUR_FP##*/}"
   MOTHUR_BASE_FP="${DATA_MOTHUR_FP%/*}/${DATA_MOTHUR_FN/.tsv/}.1.sparcc_"
-  /usr/bin/time -v timeout 3h ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
+  /usr/bin/time -v timeout --foreground 3h ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".tsv 1>/dev/null
   mv "${MOTHUR_BASE_FP}correlation" "${FULL_OUTPUT_DIR}"/mothur_cor.tsv
   rm "${MOTHUR_BASE_FP}relabund"
 }
