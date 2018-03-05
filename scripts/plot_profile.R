@@ -8,7 +8,7 @@ require(ggplot2)
 # if (length(args) != 1) {
 #   stop('Must specific extracted profile filepath')
 # }
-d.fp <- 'output/profiles.tsv'
+d.fp <- 'test.txt'
 
 ### Data
 d <- read.table(d.fp, header=TRUE, sep='\t')

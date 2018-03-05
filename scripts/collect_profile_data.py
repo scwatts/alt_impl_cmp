@@ -30,7 +30,7 @@ def main():
     args = get_arguments()
 
     # Write out header
-    header = ['software', 'memory', 'time']
+    header = ['software', 'time', 'memory']
     with args.output_fp.open('w') as fh:
         print(*header, sep='\t', file=fh)
 
