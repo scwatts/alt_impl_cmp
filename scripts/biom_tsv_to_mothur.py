@@ -25,13 +25,11 @@ def main():
         samples = next(line_token_gen)[1:]
         otu_names, otu_counts = zip(*[(name, counts) for name, *counts in line_token_gen])
         otu_counts_row_m = zip(*otu_counts)
-    otu_num = len(otu_names)
 
     # Write data
-    otu_name_gen = ('Otu%s' % i for i in range(1, otu_num+1))
-    header = ['label', 'Group', 'numOtus', *otu_name_gen]
+    otu_num = len(otu_names)
+    header = ['label', 'Group', 'numOtus', *otu_names]
     print(*header, sep='\t')
-
     for i, counts in enumerate(otu_counts_row_m):
         print('1', i, otu_num, *(int(float(c)) for c in counts), sep='\t')
 

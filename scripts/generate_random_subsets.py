@@ -27,10 +27,8 @@ def main():
     # Get command line arguments
     args = get_arguments()
 
-
     # Set PRNG seed
     random.seed(args.seed)
-
 
     # Determine number of OTUs in the file
     with args.count_table.open('r') as f:
@@ -39,7 +37,6 @@ def main():
 
     # Make a random choice for OTUs
     otu_indices = set(random.sample(range(otu_count), args.otu_number))
-
 
     # Read in header, randomly select indices and then process file data
     with args.count_table.open('r') as f:
@@ -51,7 +48,6 @@ def main():
         # adding index 0 to capture the row name when we output results
         sample_indices = set(random.sample(range(1, sample_count+1), args.sample_number))
         sample_indices.add(0)
-
 
         # Print header and then process file
         header_selected = [el for j, el in enumerate(header) if j in sample_indices]
@@ -68,8 +64,6 @@ def main():
 
             # Print out data
             print(*data, sep='\t')
-
-    return
 
 
 if __name__ == '__main__':
