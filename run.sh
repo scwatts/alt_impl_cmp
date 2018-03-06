@@ -1,6 +1,9 @@
 #!/bin/bash
 set -x
 
+# Environment variables
+# Required by numpy (in sparcc) to avoid issues with oversubscribing resources and CPU thrashing
+export OMP_NUM_THREADS=1
 
 # Parameters
 RNG_SEED=0
@@ -35,7 +38,7 @@ function run_software {
   /usr/bin/time -v ./software/fastspar/fastspar -c "${DATA_FP}" -r "${FULL_OUTPUT_DIR}"/fastspar_cor_threaded.tsv -a "${FULL_OUTPUT_DIR}"/fastspar_cov_threaded.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" -t 10 -y 2>"${FULL_PROFILE_DIR}"/fastspar_threaded_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
 
   echo 'SparCC'
-  /usr/bin/time -v timeout --foreground 3h ./software/sparcc/SparCC.py -c "${FULL_OUTPUT_DIR}"/sparcc_cor.tsv -v "${FULL_OUTPUT_DIR}"/sparcc_cov.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" "${DATA_FP}" 2>"${FULL_PROFILE_DIR}"/sparcc_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
+  /usr/bin/time -v python2 ./software/sparcc/SparCC.py -c "${FULL_OUTPUT_DIR}"/sparcc_cor.tsv -v "${FULL_OUTPUT_DIR}"/sparcc_cov.tsv -i "${ITERATIONS}" -x "${XITERATIONS}" "${DATA_FP}" 2>"${FULL_PROFILE_DIR}"/sparcc_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
 
   echo 'SpiecEasi SparCC'
   /usr/bin/time -v ./scripts/run_spieceasi.R "${ITERATIONS}" "${XITERATIONS}" "${DATA_FP}" "${FULL_OUTPUT_DIR}"/spieceasi_cor.tsv 2>"${FULL_PROFILE_DIR}"/spieceasi_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
@@ -43,24 +46,28 @@ function run_software {
   echo 'Mothur SparCC'
   DATA_MOTHUR_FN="${DATA_MOTHUR_FP##*/}"
   MOTHUR_BASE_FP="${DATA_MOTHUR_FP%/*}/${DATA_MOTHUR_FN/.tsv/}.1.sparcc_"
-  /usr/bin/time -v timeout --foreground 3h ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
+  /usr/bin/time -v ./software/mothur/mothur "#sparcc(shared=${DATA_MOTHUR_FP}, samplings=${ITERATIONS}, iterations=${XITERATIONS}, permutations=0, processors=1)" 2>"${FULL_PROFILE_DIR}"/mothur_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
   mv "${MOTHUR_BASE_FP}correlation" "${FULL_OUTPUT_DIR}"/mothur_cor.tsv
   rm "${MOTHUR_BASE_FP}relabund"
+  rm mothur.*.logfile
 }
 
 # Provision software
 MOTHUR_URL=https://github.com/mothur/mothur/releases/download/v1.39.5/Mothur.linux_64_static.zip
 FASTSPAR_URL=https://github.com/scwatts/fastspar.git
+SPARCC_URL=https://bitbucket.org/yonatanf/sparcc
 
 echo 'Provisioning software'
 mkdir -p "${TEMP_DIR}" "${SOFTWARE_DIR}"
-{ wget -P "${TEMP_DIR}" "${MOTHUR_URL}"
-unzip temp/Mothur.linux_64_static.zip -d temp/; } 2>/dev/null 1>&2
-mv "${TEMP_DIR}"/mothur "${SOFTWARE_DIR}"
-
 { git clone "${FASTSPAR_URL}" "${TEMP_DIR}"/fastspar/
 (cd "${TEMP_DIR}"/fastspar/; ./configure --prefix=$(pwd -P); make install -j); } 2>/dev/null 1>&2
 mv "${TEMP_DIR}"/fastspar/bin "${SOFTWARE_DIR}"/fastspar
+
+hg clone "${SPARCC_URL}" software/sparcc 2>/dev/null 1>&2
+
+{ wget -P "${TEMP_DIR}" "${MOTHUR_URL}"
+unzip temp/Mothur.linux_64_static.zip -d temp/; } 2>/dev/null 1>&2
+mv "${TEMP_DIR}"/mothur "${SOFTWARE_DIR}"
 
 R -e "install.packages('devtools', repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi');" 2>/dev/null 1>&2
 
@@ -82,12 +89,12 @@ gzip -d "${OTU_TABLE_FP_GZ}"
 ./scripts/biom_tsv_to_mothur.py --input_fp "${MID_DATA_FP}" > "${MID_DATA_MOTHUR_FP}"
 
 # Run software
-mkdir -p {"${OUTPUT_DIR}","${PROFILE_DIR}"}/{large,small}
+mkdir -p {"${OUTPUT_DIR}","${PROFILE_DIR}"}/{mid,small}
 echo 'Small dataset, for results comparison'
 run_software "${SML_DATA_FP}" "${SML_DATA_MOTHUR_FP}" "${OUTPUT_DIR}"/small "${PROFILE_DIR}"/small "${ITERATIONS}" "${XITERATIONS}" "${SML_SAMPLE_COUNT}" "${SML_OTU_COUNT}"
 
 echo 'Mid-sized dataset, for profiling'
-run_software "${MID_DATA_FP}" "${MID_DATA_MOTHUR_FP}" "${OUTPUT_DIR}"/large "${PROFILE_DIR}"/large "${ITERATIONS}" "${XITERATIONS}" "${MID_SAMPLE_COUNT}" "${MID_OTU_COUNT}"
+run_software "${MID_DATA_FP}" "${MID_DATA_MOTHUR_FP}" "${OUTPUT_DIR}"/mid "${PROFILE_DIR}"/mid "${ITERATIONS}" "${XITERATIONS}" "${MID_SAMPLE_COUNT}" "${MID_OTU_COUNT}"
 
 # Collect data
-./scripts/collect_profile_data.py --profile_log_fps "${PROFILE_DIR}"/large/*txt --output "${OUTPUT_DIR}"/profiles.tsv
+./scripts/collect_profile_data.py --profile_log_fps "${PROFILE_DIR}"/mid/*txt --output "${OUTPUT_DIR}"/profiles.tsv
