@@ -42,6 +42,7 @@ function run_software {
 
   echo 'SpiecEasi SparCC'
   /usr/bin/time -v ./scripts/run_spieceasi.R "${ITERATIONS}" "${XITERATIONS}" "${DATA_FP}" "${FULL_OUTPUT_DIR}"/spieceasi_cor.tsv 2>"${FULL_PROFILE_DIR}"/spieceasi_"${SAMPLES}"_"${OTUS}".txt 1>/dev/null
+  sed -i '1s/^/#OTU ID\t/' "${FULL_OUTPUT_DIR}"/spieceasi_cor.tsv
 
   echo 'Mothur SparCC'
   DATA_MOTHUR_FN="${DATA_MOTHUR_FP##*/}"
