@@ -8,12 +8,13 @@ args = commandArgs(trailingOnly=TRUE)
 if (length(args) != 1) {
   stop('Must specific extracted profile filepath')
 }
+d.fp <- args[[1]]
 
 ### Data
 d <- read.table(d.fp, header=TRUE, sep='\t')
 
 ### Process
-d$names <- sub('_200_50.txt$', '', d$software)
+d$names <- sub('_500_1000.txt$', '', d$software)
 d$time <- d$time / (60**2)
 d$memory <- d$memory / (1024**2)
 
