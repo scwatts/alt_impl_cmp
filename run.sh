@@ -99,3 +99,7 @@ run_software "${MID_DATA_FP}" "${MID_DATA_MOTHUR_FP}" "${OUTPUT_DIR}"/mid "${PRO
 
 # Collect data
 ./scripts/collect_profile_data.py --profile_log_fps "${PROFILE_DIR}"/mid/*txt --output "${OUTPUT_DIR}"/profiles.tsv
+
+# Generate plots
+./scripts/plot_correlation.R output/small/*cor.tsv
+./scripts/plot_profile.R output/profiles.tsv
