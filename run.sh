@@ -65,12 +65,13 @@ mkdir -p "${TEMP_DIR}" "${SOFTWARE_DIR}"
 mv "${TEMP_DIR}"/fastspar/bin "${SOFTWARE_DIR}"/fastspar
 
 hg clone "${SPARCC_URL}" software/sparcc 2>/dev/null 1>&2
+(cd software/sparcc; hg checkout 05f4d3f) 2>/dev/null 1>&2
 
 { wget -P "${TEMP_DIR}" "${MOTHUR_URL}"
 unzip temp/Mothur.linux_64_static.zip -d temp/; } 2>/dev/null 1>&2
 mv "${TEMP_DIR}"/mothur "${SOFTWARE_DIR}"
 
-R -e "install.packages('devtools', repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi');" 2>/dev/null 1>&2
+R -e "install.packages('devtools', repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi', ref='dea8763');" 2>/dev/null 1>&2
 
 yes | rm -r temp/
 
