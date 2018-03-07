@@ -51,6 +51,7 @@ function run_software {
   mv "${MOTHUR_BASE_FP}correlation" "${FULL_OUTPUT_DIR}"/mothur_cor.tsv
   rm "${MOTHUR_BASE_FP}relabund"
   rm mothur.*.logfile
+  sed -i '1s/^/#OTU ID/' "${FULL_OUTPUT_DIR}"/mothur_cor.tsv
 }
 
 # Provision software
