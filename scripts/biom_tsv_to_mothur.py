@@ -26,12 +26,12 @@ def main():
         otu_names, otu_counts = zip(*[(name, counts) for name, *counts in line_token_gen])
         otu_counts_row_m = zip(*otu_counts)
 
-    # Write data
+    # Write data; each line has an extra tab appended
     otu_num = len(otu_names)
     header = ['label', 'Group', 'numOtus', *otu_names]
-    print(*header, sep='\t')
+    print(*header, sep='\t', end='\t\n')
     for i, counts in enumerate(otu_counts_row_m):
-        print('1', i, otu_num, *(int(float(c)) for c in counts), sep='\t')
+        print('1', i, otu_num, *(int(float(c)) for c in counts), sep='\t', end='\t\n')
 
 
 if __name__ == '__main__':
