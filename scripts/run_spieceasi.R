@@ -2,7 +2,7 @@
 
 
 ### Arguments
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly=TRUE)
 if(length(args) != 4) {
     stop('Iterations, exclusion iterations, and filepaths required\n./run_spieceasi.R <it> <xit> <infp> <outfp>')
 }
