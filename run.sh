@@ -61,8 +61,8 @@ SPARCC_URL=https://bitbucket.org/yonatanf/sparcc
 
 echo 'Provisioning software'
 mkdir -p "${TEMP_DIR}" "${SOFTWARE_DIR}"
-{ git clone "${FASTSPAR_URL}" "${TEMP_DIR}"/fastspar/
-(cd "${TEMP_DIR}"/fastspar/; ./configure --prefix=$(pwd -P); make install -j); } 2>/dev/null 1>&2
+{ git clone "${FASTSPAR_URL}" "${TEMP_DIR}"/fastspar/;
+(cd "${TEMP_DIR}"/fastspar/; ./autogen.sh; ./configure --prefix=$(pwd -P); make install -j); } 2>/dev/null 1>&2
 mv "${TEMP_DIR}"/fastspar/bin "${SOFTWARE_DIR}"/fastspar
 
 hg clone "${SPARCC_URL}" software/sparcc 2>/dev/null 1>&2
