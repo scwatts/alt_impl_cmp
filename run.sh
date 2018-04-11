@@ -72,7 +72,7 @@ hg clone "${SPARCC_URL}" software/sparcc 2>/dev/null 1>&2
 unzip temp/Mothur.linux_64_static.zip -d temp/; } 2>/dev/null 1>&2
 mv "${TEMP_DIR}"/mothur "${SOFTWARE_DIR}"
 
-R -e "install.packages(c('devtools', 'ggplot2', 'scales'), repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi', ref='dea8763');" 2>/dev/null 1>&2
+R -e "install.packages(c('devtools', 'ggplot2', 'GGally'), repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi', ref='dea8763');" 2>/dev/null 1>&2
 
 yes | rm -r temp/
 
