@@ -9,7 +9,7 @@ The scripts in this repository run and compare the results of four implementatio
 
 # Performing this analysis
 ## Requirements
-There a few requirements to run this analysis:
+There are a few requirements to run this analysis:
 * A modern computer with amd64 architecture running GNU/Linux
 * Run commands as a supseruser (e.g. using `sudo`)
 * Have `debootstrap` installed
@@ -42,8 +42,8 @@ Finally this repository can be cloned and the analysis run:
 cd /tmp/
 
 # Clone repo and perform analysis
-git clone https://github.com/scwatts/alt_impl_cmp
-cd alt_impl_cmp
+git clone https://github.com/scwatts/sparcc_implementation_comparison
+cd sparcc_implementation_comparison
 ./run.sh
 ```
 
