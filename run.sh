@@ -55,7 +55,7 @@ function run_software {
 }
 
 # Provision software
-MOTHUR_URL=https://github.com/mothur/mothur/releases/download/v1.39.5/Mothur.linux_64_static.zip
+MOTHUR_URL=https://github.com/mothur/mothur/releases/download/v1.40.3/Mothur.linux_64.zip
 FASTSPAR_URL=https://github.com/scwatts/fastspar.git
 SPARCC_URL=https://bitbucket.org/yonatanf/sparcc
 
@@ -69,7 +69,7 @@ hg clone "${SPARCC_URL}" software/sparcc 2>/dev/null 1>&2
 (cd software/sparcc; hg checkout 05f4d3f) 2>/dev/null 1>&2
 
 { wget -P "${TEMP_DIR}" "${MOTHUR_URL}"
-unzip temp/Mothur.linux_64_static.zip -d temp/; } 2>/dev/null 1>&2
+unzip temp/Mothur.linux_64.zip -d temp/; } 2>/dev/null 1>&2
 mv "${TEMP_DIR}"/mothur "${SOFTWARE_DIR}"
 
 R -e "install.packages(c('devtools', 'ggplot2', 'GGally'), repos='http://cran.rstudio.com/'); library(devtools); install_github('zdk123/SpiecEasi', ref='dea8763');" 2>/dev/null 1>&2
